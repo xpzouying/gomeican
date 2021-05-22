@@ -4,21 +4,19 @@ import (
 	"context"
 	"net/url"
 	"time"
-
-	"github.com/sirupsen/logrus"
 )
 
 type calendarItem struct {
-	TargetTime int // unix time, (ms)
-	Title      string
+	TargetTime int    `json:"targetTime"` // unix time, (ms)
+	Title      string `json:"title"`
 	UserTab    struct {
-		UniqueID string
-	}
+		UniqueID string `json:"uniqueId"`
+	} `json:"userTab"`
 	OpeningTime struct {
-		Name      string // 午餐、晚餐
-		OpenTime  string
-		CloseTime string
-	}
+		Name      string `json:"name"` // 午餐、晚餐
+		OpenTime  string `json:"openTime"`
+		CloseTime string `json:"closeTime"`
+	} `json:"openingTime"`
 }
 
 func (meican *Meican) getTodayCalendarItems(ctx context.Context) ([]calendarItem, error) {
@@ -27,25 +25,22 @@ func (meican *Meican) getTodayCalendarItems(ctx context.Context) ([]calendarItem
 
 func (meican *Meican) getCalendarItems(ctx context.Context, day time.Time) ([]calendarItem, error) {
 	path := "/calendaritems/list"
-	targetPath := path + "?" + makeGetCalendarItemsParams(day) + "?client_id=Xqr8w0Uk4ciodqfPwjhav5rdxTaYepD&client_secret=vD11O6xI9bG3kqYRu9OyPAHkRGxLh4E"
-
-	logrus.Infof("target path: %s", targetPath)
+	targetPath := path + "?" + makeGetCalendarItemsParams(day)
 
 	var calendarInfo struct {
 		DateList []struct {
-			Date             string         `json:"date"`
 			CalendarItemList []calendarItem `json:"calendarItemList"`
 		} `json:"dateList"`
 	}
-	if err := meican.get200AndUnmarshal(ctx, targetPath, &calendarInfo); err != nil {
+	if err := meican.getAndUnmarshal(ctx, targetPath, &calendarInfo); err != nil {
 		return nil, err
 	}
 
-	if dateList := calendarInfo.DateList; len(dateList) == 0 {
+	if list := calendarInfo.DateList; len(list) == 0 {
 		return []calendarItem{}, nil
 	} else {
 		// 应该是多个日期的话，按照日期进行排序，我们只取第一个日期的清单
-		return dateList[0].CalendarItemList, nil
+		return list[0].CalendarItemList, nil
 	}
 }
 

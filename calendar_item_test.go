@@ -19,7 +19,7 @@ func TestGetCalendarItems(t *testing.T) {
 
 	day := time.Date(2021, time.Month(5), 25, 0, 0, 0, 0, time.Local)
 
-	meican := NewMeican("", "")
+	meican := newTestMeican()
 
 	got, err := meican.getCalendarItems(context.Background(), day)
 	assert.NoError(t, err)
