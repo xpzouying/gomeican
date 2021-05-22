@@ -54,10 +54,12 @@ func (meican *Meican) GetOrderList(ctx context.Context, d time.Time) ([]DinnerOr
 	// 周末calList为空。
 	// 工作日为午餐、晚餐
 	calList, err := meican.getCalendarItems(ctx, d)
-	panicError(err)
+	if err != nil {
+		return nil, err
+	}
 
 	if len(calList) == 0 {
-		panic("no valid order")
+		return []DinnerOrder{}, nil
 	}
 
 	orders := make([]DinnerOrder, len(calList))
