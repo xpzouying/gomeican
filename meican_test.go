@@ -25,9 +25,5 @@ func TestGetOrderList(t *testing.T) {
 	d := time.Date(2021, time.Month(5), 25, 0, 0, 0, 0, time.Local)
 	orders, err := meican.GetOrderList(context.Background(), d)
 	assert.NoError(t, err)
-
-	for _, order := range orders {
-		t.Logf("order: %+v", order)
-	}
-
+	assert.NotZero(t, len(orders))
 }

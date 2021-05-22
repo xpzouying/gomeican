@@ -61,8 +61,9 @@ func (meican *Meican) GetOrderList(ctx context.Context, d time.Time) ([]DinnerOr
 	}
 
 	orders := make([]DinnerOrder, len(calList))
-	for i, calItem := range calList {
-		orders[i], err = meican.getValidOrderInfo(ctx, &calItem, d)
+	for i := 0; i < len(calList); i++ {
+
+		orders[i], err = meican.getTimePeriodOrderInfo(ctx, calList[i], d)
 		if err != nil {
 			return nil, err
 		}
@@ -71,8 +72,9 @@ func (meican *Meican) GetOrderList(ctx context.Context, d time.Time) ([]DinnerOr
 	return orders, nil
 }
 
-func (meican *Meican) getValidOrderInfo(ctx context.Context, calItem *calendarItem, d time.Time) (orderInfo DinnerOrder, err error) {
-	orderInfo.TimeInfo = calItem
+// 获取指定时间段的餐厅的订餐信息
+func (meican *Meican) getTimePeriodOrderInfo(ctx context.Context, calItem calendarItem, d time.Time) (orderInfo DinnerOrder, err error) {
+	orderInfo.TimeInfo = &calItem
 
 	targetTime := fmt.Sprintf("%s+%s", d.Format("2006-01-02"), calItem.OpeningTime.CloseTime)
 	tabID := calItem.UserTab.UniqueID
