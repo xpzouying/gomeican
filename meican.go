@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -113,7 +112,6 @@ func (meican *Meican) getAndUnmarshal(ctx context.Context, path string, v interf
 	}
 
 	if err := json.Unmarshal(data, &v); err != nil {
-		logrus.Errorf("path: %s unmarshal failed. data: %s", path, data)
 		return err
 	}
 	return nil
@@ -124,8 +122,6 @@ func (meican *Meican) get200(ctx context.Context, path string) ([]byte, error) {
 }
 
 func (meican *Meican) send(ctx context.Context, method, path string, wantStatus int, body io.Reader) ([]byte, error) {
-	logrus.Infof("send: %s", prefix+path)
-
 	req, err := http.NewRequestWithContext(ctx, method, prefix+path, body)
 	if err != nil {
 		return nil, err
